@@ -76,12 +76,12 @@ export function Indexes() {
 		<div className="space-y-6">
 			<div className="flex items-center justify-between">
 				<div>
-					<h2 className="text-2xl font-bold text-gray-900 dark:text-catppuccin-text">Indexes</h2>
+					<h2 className="text-2xl font-bold text-gray-900 dark:text-catppuccin-text text-left">Indexes</h2>
 					<p className="mt-1 text-gray-600 dark:text-catppuccin-subtext1">
 						Browse and manage your Elasticsearch indexes
 					</p>
 				</div>
-				<div className="text-sm text-gray-500 dark:text-catppuccin-subtext0 bg-gray-100 dark:bg-catppuccin-surface0 px-3 py-1 rounded-full">
+				<div className="text-sm text-gray-500 dark:text-catppuccin-white bg-gray-100 dark:bg-catppuccin-surface0 px-3 py-1 rounded-full">
 					{filteredIndexes.length} indexes found
 				</div>
 			</div>
@@ -136,7 +136,7 @@ export function Indexes() {
 											</span>
 										</div>
 										<div className="mt-3 grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-											<div className="bg-gray-50 dark:bg-catppuccin-surface0 p-3 rounded-lg">
+											<div className="bg-gray-50 dark:bg-catppuccin-surface1 p-3 rounded-lg">
 												<div className="font-medium text-gray-700 dark:text-catppuccin-subtext1">
 													Documents
 												</div>
@@ -144,13 +144,13 @@ export function Indexes() {
 													{formatNumber(index["docs.count"])}
 												</div>
 											</div>
-											<div className="bg-gray-50 dark:bg-catppuccin-surface0 p-3 rounded-lg">
+											<div className="bg-gray-50 dark:bg-catppuccin-surface1 p-3 rounded-lg">
 												<div className="font-medium text-gray-700 dark:text-catppuccin-subtext1">Size</div>
 												<div className="text-gray-900 dark:text-catppuccin-text font-semibold">
 													{formatSize(index["store.size"])}
 												</div>
 											</div>
-											<div className="bg-gray-50 dark:bg-catppuccin-surface0 p-3 rounded-lg">
+											<div className="bg-gray-50 dark:bg-catppuccin-surface1 p-3 rounded-lg">
 												<div className="font-medium text-gray-700 dark:text-catppuccin-subtext1">
 													Primary Shards
 												</div>
@@ -158,7 +158,7 @@ export function Indexes() {
 													{index.pri}
 												</div>
 											</div>
-											<div className="bg-gray-50 dark:bg-catppuccin-surface0 p-3 rounded-lg">
+											<div className="bg-gray-50 dark:bg-catppuccin-surface1 p-3 rounded-lg">
 												<div className="font-medium text-gray-700 dark:text-catppuccin-subtext1">
 													Replicas
 												</div>

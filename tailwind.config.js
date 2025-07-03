@@ -7,6 +7,9 @@ export default {
   darkMode: 'class',
   theme: {
     extend: {
+      fontFamily: {
+        'rubik': ['Rubik', 'sans-serif'],
+      },
       colors: {
         // Catppuccin Mocha Theme Colors
         catppuccin: {
@@ -45,6 +48,7 @@ export default {
           'pink': '#f5c2e7',
           'flamingo': '#f2cdcd',
           'rosewater': '#f5e0dc',
+          "white": "#ffffff",
         },
       },
     },
