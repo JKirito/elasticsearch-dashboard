@@ -92,12 +92,12 @@ export function IndexDetail() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyDown={handleKeyDown}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-catppuccin-surface2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-catppuccin-surface0 text-gray-900 dark:text-catppuccin-text"
             />
           </div>
           <button
             onClick={handleSearch}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-150 flex items-center gap-2"
+            className="px-4 py-2 bg-blue-600 dark:bg-catppuccin-blue text-white rounded-lg hover:bg-blue-700 dark:hover:bg-catppuccin-sapphire focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-catppuccin-base transition-colors duration-150 flex items-center gap-2"
           >
             <Search className="h-4 w-4" />
             Search
@@ -105,7 +105,7 @@ export function IndexDetail() {
           {activeSearchQuery && (
             <button
               onClick={handleClearSearch}
-              className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors duration-150"
+              className="px-4 py-2 bg-gray-500 dark:bg-catppuccin-overlay1 text-white rounded-lg hover:bg-gray-600 dark:hover:bg-catppuccin-overlay2 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 dark:focus:ring-offset-catppuccin-base transition-colors duration-150"
             >
               Clear
             </button>
@@ -114,13 +114,13 @@ export function IndexDetail() {
 
         {/* Search Status */}
         {activeSearchQuery && (
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+          <div className="bg-blue-50 dark:bg-catppuccin-surface0 border border-blue-200 dark:border-catppuccin-surface1 rounded-lg p-3">
             <div className="flex items-center gap-2">
-              <Search className="h-4 w-4 text-blue-600" />
-              <span className="text-sm text-blue-800">
+              <Search className="h-4 w-4 text-blue-600 dark:text-catppuccin-blue" />
+              <span className="text-sm text-blue-800 dark:text-catppuccin-text">
                 Searching for: <span className="font-semibold">"{activeSearchQuery}"</span>
               </span>
-              <span className="text-sm text-blue-600">
+              <span className="text-sm text-blue-600 dark:text-catppuccin-subtext1">
                 ({searchResults?.hits.total.value || 0} results)
               </span>
             </div>
@@ -132,24 +132,24 @@ export function IndexDetail() {
           {searchResults?.hits.hits.length === 0 ? (
             <div className="text-center py-12">
               <FileText className="h-12 w-12 text-gray-400 mx-auto mb-3" />
-              <p className="text-gray-500 font-medium">No documents found</p>
-              <p className="text-sm text-gray-400 mt-1">Try adjusting your search query</p>
+              <p className="text-gray-500 dark:text-catppuccin-subtext1 font-medium">No documents found</p>
+              <p className="text-sm text-gray-400 dark:text-catppuccin-subtext0 mt-1">Try adjusting your search query</p>
             </div>
           ) : (
             searchResults?.hits.hits.map((doc) => (
               <div
                 key={doc._id}
-                className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors duration-150"
+                className="border border-gray-200 dark:border-catppuccin-surface1 rounded-lg p-4 hover:bg-gray-50 dark:hover:bg-catppuccin-surface0 transition-colors duration-150"
               >
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="mb-3 flex items-center justify-between">
                       <div>
-                        <span className="text-sm font-medium text-gray-500">Document ID:</span>
-                        <span className="ml-2 text-sm font-semibold text-gray-900">{doc._id}</span>
+                        <span className="text-sm font-medium text-gray-500 dark:text-catppuccin-subtext0">Document ID:</span>
+                        <span className="ml-2 text-sm font-semibold text-gray-900 dark:text-catppuccin-text">{doc._id}</span>
                       </div>
                       {doc._score && (
-                        <span className="text-xs text-gray-500">Score: {doc._score.toFixed(4)}</span>
+                        <span className="text-xs text-gray-500 dark:text-catppuccin-subtext0">Score: {doc._score.toFixed(4)}</span>
                       )}
                     </div>
                     <JsonViewer data={doc._source} />
@@ -166,17 +166,17 @@ export function IndexDetail() {
             <button
               onClick={() => setCurrentPage((prev) => Math.max(0, prev - 1))}
               disabled={currentPage === 0}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150"
+              className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-catppuccin-subtext1 bg-white dark:bg-catppuccin-surface0 border border-gray-300 dark:border-catppuccin-surface2 rounded-md hover:bg-gray-50 dark:hover:bg-catppuccin-surface1 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150"
             >
               Previous
             </button>
-            <span className="text-sm text-gray-700">
+            <span className="text-sm text-gray-700 dark:text-catppuccin-text">
               Page {currentPage + 1} of {totalPages}
             </span>
             <button
               onClick={() => setCurrentPage((prev) => Math.min(totalPages - 1, prev + 1))}
               disabled={currentPage === totalPages - 1}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150"
+              className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-catppuccin-subtext1 bg-white dark:bg-catppuccin-surface0 border border-gray-300 dark:border-catppuccin-surface2 rounded-md hover:bg-gray-50 dark:hover:bg-catppuccin-surface1 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-150"
             >
               Next
             </button>
@@ -191,7 +191,7 @@ export function IndexDetail() {
     
     return (
       <div className="space-y-4">
-        <h3 className="text-lg font-medium text-gray-900">Field Mappings</h3>
+        <h3 className="text-lg font-medium text-gray-900 dark:text-catppuccin-text">Field Mappings</h3>
         <JsonViewer data={properties} />
       </div>
     );
@@ -202,7 +202,7 @@ export function IndexDetail() {
     
     return (
       <div className="space-y-4">
-        <h3 className="text-lg font-medium text-gray-900">Index Settings</h3>
+        <h3 className="text-lg font-medium text-gray-900 dark:text-catppuccin-text">Index Settings</h3>
         <JsonViewer data={settings} />
       </div>
     );
@@ -214,13 +214,13 @@ export function IndexDetail() {
       <div className="flex items-center space-x-4">
         <Link
           to="/indexes"
-          className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg"
+          className="p-2 text-gray-600 dark:text-catppuccin-subtext1 hover:text-gray-900 dark:hover:text-catppuccin-text hover:bg-gray-100 dark:hover:bg-catppuccin-surface0 rounded-lg"
         >
           <ArrowLeft className="h-5 w-5" />
         </Link>
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">{decodedIndexName}</h2>
-          <p className="mt-1 text-gray-600">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-catppuccin-text">{decodedIndexName}</h2>
+          <p className="mt-1 text-gray-600 dark:text-catppuccin-subtext1">
             Index details and document browser
           </p>
         </div>
@@ -230,32 +230,32 @@ export function IndexDetail() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Card className="bg-white">
           <div className="text-center">
-            <p className="text-sm font-medium text-gray-500">Total Documents</p>
-            <p className="mt-1 text-2xl font-bold text-gray-900">
+            <p className="text-sm font-medium text-gray-500 dark:text-catppuccin-subtext0">Total Documents</p>
+            <p className="mt-1 text-2xl font-bold text-gray-900 dark:text-catppuccin-text">
               {indexStats?.primaries?.docs?.count?.toLocaleString() || 0}
             </p>
           </div>
         </Card>
         <Card className="bg-white">
           <div className="text-center">
-            <p className="text-sm font-medium text-gray-500">Primary Size</p>
-            <p className="mt-1 text-2xl font-bold text-gray-900">
+            <p className="text-sm font-medium text-gray-500 dark:text-catppuccin-subtext0">Primary Size</p>
+            <p className="mt-1 text-2xl font-bold text-gray-900 dark:text-catppuccin-text">
               {formatBytes(indexStats?.primaries?.store?.size_in_bytes || 0)}
             </p>
           </div>
         </Card>
         <Card className="bg-white">
           <div className="text-center">
-            <p className="text-sm font-medium text-gray-500">Total Size</p>
-            <p className="mt-1 text-2xl font-bold text-gray-900">
+            <p className="text-sm font-medium text-gray-500 dark:text-catppuccin-subtext0">Total Size</p>
+            <p className="mt-1 text-2xl font-bold text-gray-900 dark:text-catppuccin-text">
               {formatBytes(indexStats?.total?.store?.size_in_bytes || 0)}
             </p>
           </div>
         </Card>
         <Card className="bg-white">
           <div className="text-center">
-            <p className="text-sm font-medium text-gray-500">Segments</p>
-            <p className="mt-1 text-2xl font-bold text-gray-900">
+            <p className="text-sm font-medium text-gray-500 dark:text-catppuccin-subtext0">Segments</p>
+            <p className="mt-1 text-2xl font-bold text-gray-900 dark:text-catppuccin-text">
               {indexStats?.primaries?.segments?.count || 0}
             </p>
           </div>
@@ -263,14 +263,14 @@ export function IndexDetail() {
       </div>
 
       {/* Tabs */}
-      <div className="border-b border-gray-200">
+      <div className="border-b border-gray-200 dark:border-catppuccin-surface1">
         <nav className="-mb-px flex space-x-8">
           <button
             onClick={() => setActiveTab('documents')}
             className={`py-2 px-1 border-b-2 font-medium text-sm ${
               activeTab === 'documents'
-                ? 'border-blue-500 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                ? 'border-blue-500 text-blue-600 dark:text-catppuccin-blue'
+                : 'border-transparent text-gray-500 dark:text-catppuccin-subtext0 hover:text-gray-700 dark:hover:text-catppuccin-text hover:border-gray-300 dark:hover:border-catppuccin-surface2'
             }`}
           >
             <FileText className="inline-block h-5 w-5 mr-1" />
@@ -280,8 +280,8 @@ export function IndexDetail() {
             onClick={() => setActiveTab('mapping')}
             className={`py-2 px-1 border-b-2 font-medium text-sm ${
               activeTab === 'mapping'
-                ? 'border-blue-500 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                ? 'border-blue-500 text-blue-600 dark:text-catppuccin-blue'
+                : 'border-transparent text-gray-500 dark:text-catppuccin-subtext0 hover:text-gray-700 dark:hover:text-catppuccin-text hover:border-gray-300 dark:hover:border-catppuccin-surface2'
             }`}
           >
             <Settings className="inline-block h-5 w-5 mr-1" />
@@ -291,8 +291,8 @@ export function IndexDetail() {
             onClick={() => setActiveTab('settings')}
             className={`py-2 px-1 border-b-2 font-medium text-sm ${
               activeTab === 'settings'
-                ? 'border-blue-500 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                ? 'border-blue-500 text-blue-600 dark:text-catppuccin-blue'
+                : 'border-transparent text-gray-500 dark:text-catppuccin-subtext0 hover:text-gray-700 dark:hover:text-catppuccin-text hover:border-gray-300 dark:hover:border-catppuccin-surface2'
             }`}
           >
             <Settings className="inline-block h-5 w-5 mr-1" />

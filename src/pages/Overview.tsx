@@ -21,13 +21,13 @@ export function Overview() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'green':
-        return 'text-green-600 bg-green-100';
+        return 'text-green-600 dark:text-catppuccin-green bg-green-100 dark:bg-catppuccin-green/20';
       case 'yellow':
-        return 'text-yellow-600 bg-yellow-100';
+        return 'text-yellow-600 dark:text-catppuccin-yellow bg-yellow-100 dark:bg-catppuccin-yellow/20';
       case 'red':
-        return 'text-red-600 bg-red-100';
+        return 'text-red-600 dark:text-catppuccin-red bg-red-100 dark:bg-catppuccin-red/20';
       default:
-        return 'text-gray-600 bg-gray-100';
+        return 'text-gray-600 dark:text-catppuccin-subtext1 bg-gray-100 dark:bg-catppuccin-surface0';
     }
   };
 
@@ -43,8 +43,8 @@ export function Overview() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold text-gray-900">Cluster Overview</h2>
-        <p className="mt-1 text-gray-600">
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-catppuccin-text">Cluster Overview</h2>
+        <p className="mt-1 text-gray-600 dark:text-catppuccin-subtext1">
           Monitor your Elasticsearch cluster health and performance
         </p>
       </div>
@@ -53,14 +53,14 @@ export function Overview() {
       <Card title="Cluster Information">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <p className="text-sm font-medium text-gray-500">Cluster Name</p>
-            <p className="mt-1 text-lg font-semibold text-gray-900">
+            <p className="text-sm font-medium text-gray-500 dark:text-catppuccin-subtext0">Cluster Name</p>
+            <p className="mt-1 text-lg font-semibold text-gray-900 dark:text-catppuccin-text">
               {clusterInfo?.cluster_name || 'Unknown'}
             </p>
           </div>
           <div>
-            <p className="text-sm font-medium text-gray-500">Version</p>
-            <p className="mt-1 text-lg font-semibold text-gray-900">
+            <p className="text-sm font-medium text-gray-500 dark:text-catppuccin-subtext0">Version</p>
+            <p className="mt-1 text-lg font-semibold text-gray-900 dark:text-catppuccin-text">
               {clusterInfo?.version?.number || 'Unknown'}
             </p>
           </div>
@@ -71,7 +71,7 @@ export function Overview() {
       <Card title="Cluster Health">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div>
-            <p className="text-sm font-medium text-gray-500">Status</p>
+            <p className="text-sm font-medium text-gray-500 dark:text-catppuccin-subtext0">Status</p>
             <div className="mt-2 flex items-center">
               <span
                 className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(
@@ -84,14 +84,14 @@ export function Overview() {
             </div>
           </div>
           <div>
-            <p className="text-sm font-medium text-gray-500">Nodes</p>
-            <p className="mt-1 text-2xl font-semibold text-gray-900">
+            <p className="text-sm font-medium text-gray-500 dark:text-catppuccin-subtext0">Nodes</p>
+            <p className="mt-1 text-2xl font-semibold text-gray-900 dark:text-catppuccin-text">
               {clusterHealth?.number_of_nodes || 0}
             </p>
           </div>
           <div>
-            <p className="text-sm font-medium text-gray-500">Data Nodes</p>
-            <p className="mt-1 text-2xl font-semibold text-gray-900">
+            <p className="text-sm font-medium text-gray-500 dark:text-catppuccin-subtext0">Data Nodes</p>
+            <p className="mt-1 text-2xl font-semibold text-gray-900 dark:text-catppuccin-text">
               {clusterHealth?.number_of_data_nodes || 0}
             </p>
           </div>
@@ -102,26 +102,26 @@ export function Overview() {
       <Card title="Shard Information">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div>
-            <p className="text-sm font-medium text-gray-500">Active Primary</p>
-            <p className="mt-1 text-xl font-semibold text-gray-900">
+            <p className="text-sm font-medium text-gray-500 dark:text-catppuccin-subtext0">Active Primary</p>
+            <p className="mt-1 text-xl font-semibold text-gray-900 dark:text-catppuccin-text">
               {clusterHealth?.active_primary_shards || 0}
             </p>
           </div>
           <div>
-            <p className="text-sm font-medium text-gray-500">Active Shards</p>
-            <p className="mt-1 text-xl font-semibold text-gray-900">
+            <p className="text-sm font-medium text-gray-500 dark:text-catppuccin-subtext0">Active Shards</p>
+            <p className="mt-1 text-xl font-semibold text-gray-900 dark:text-catppuccin-text">
               {clusterHealth?.active_shards || 0}
             </p>
           </div>
           <div>
-            <p className="text-sm font-medium text-gray-500">Relocating</p>
-            <p className="mt-1 text-xl font-semibold text-gray-900">
+            <p className="text-sm font-medium text-gray-500 dark:text-catppuccin-subtext0">Relocating</p>
+            <p className="mt-1 text-xl font-semibold text-gray-900 dark:text-catppuccin-text">
               {clusterHealth?.relocating_shards || 0}
             </p>
           </div>
           <div>
-            <p className="text-sm font-medium text-gray-500">Unassigned</p>
-            <p className="mt-1 text-xl font-semibold text-gray-900">
+            <p className="text-sm font-medium text-gray-500 dark:text-catppuccin-subtext0">Unassigned</p>
+            <p className="mt-1 text-xl font-semibold text-gray-900 dark:text-catppuccin-text">
               {clusterHealth?.unassigned_shards || 0}
             </p>
           </div>
@@ -132,28 +132,28 @@ export function Overview() {
       <Card title="Index Statistics">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="flex items-center">
-            <Database className="h-12 w-12 text-blue-500" />
+            <Database className="h-12 w-12 text-blue-500 dark:text-catppuccin-blue" />
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-500">Total Indexes</p>
-              <p className="mt-1 text-2xl font-semibold text-gray-900">
+              <p className="text-sm font-medium text-gray-500 dark:text-catppuccin-subtext0">Total Indexes</p>
+              <p className="mt-1 text-2xl font-semibold text-gray-900 dark:text-catppuccin-text">
                 {indexes?.length || 0}
               </p>
             </div>
           </div>
           <div className="flex items-center">
-            <Server className="h-12 w-12 text-green-500" />
+            <Server className="h-12 w-12 text-green-500 dark:text-catppuccin-green" />
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-500">Total Documents</p>
-              <p className="mt-1 text-2xl font-semibold text-gray-900">
+              <p className="text-sm font-medium text-gray-500 dark:text-catppuccin-subtext0">Total Documents</p>
+              <p className="mt-1 text-2xl font-semibold text-gray-900 dark:text-catppuccin-text">
                 {totalDocs.toLocaleString()}
               </p>
             </div>
           </div>
           <div className="flex items-center">
-            <HardDrive className="h-12 w-12 text-purple-500" />
+            <HardDrive className="h-12 w-12 text-purple-500 dark:text-catppuccin-mauve" />
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-500">Total Size</p>
-              <p className="mt-1 text-2xl font-semibold text-gray-900">
+              <p className="text-sm font-medium text-gray-500 dark:text-catppuccin-subtext0">Total Size</p>
+              <p className="mt-1 text-2xl font-semibold text-gray-900 dark:text-catppuccin-text">
                 {formatBytes(totalSize)}
               </p>
             </div>

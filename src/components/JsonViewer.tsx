@@ -65,11 +65,11 @@ function JsonNode({ keyName, value, depth, maxDepth, path, expandedState, onTogg
   };
 
   const getValueColor = () => {
-    if (typeof value === 'string') return 'text-green-600';
-    if (typeof value === 'number') return 'text-blue-600';
-    if (typeof value === 'boolean') return 'text-purple-600';
-    if (value === null || value === undefined) return 'text-gray-400';
-    return 'text-gray-700';
+    if (typeof value === 'string') return 'text-green-600 dark:text-catppuccin-green';
+    if (typeof value === 'number') return 'text-blue-600 dark:text-catppuccin-blue';
+    if (typeof value === 'boolean') return 'text-purple-600 dark:text-catppuccin-mauve';
+    if (value === null || value === undefined) return 'text-gray-400 dark:text-catppuccin-overlay0';
+    return 'text-gray-700 dark:text-catppuccin-text';
   };
 
   return (
@@ -78,7 +78,7 @@ function JsonNode({ keyName, value, depth, maxDepth, path, expandedState, onTogg
         {isExpandable && (
           <button
             onClick={handleToggle}
-            className="p-0.5 hover:bg-gray-100 rounded transition-colors duration-150"
+            className="p-0.5 hover:bg-gray-100 dark:hover:bg-catppuccin-surface1 rounded transition-colors duration-150"
           >
             {isExpanded ? (
               <ChevronDown className="h-4 w-4 text-gray-500" />
@@ -89,7 +89,7 @@ function JsonNode({ keyName, value, depth, maxDepth, path, expandedState, onTogg
         )}
         {!isExpandable && <span className="w-5" />}
         
-        <span className="text-gray-700 font-medium">{keyName}:</span>
+        <span className="text-gray-700 dark:text-catppuccin-text font-medium">{keyName}:</span>
         
         {!isExpanded && (
           <span className={`ml-2 ${getValueColor()}`}>
@@ -100,7 +100,7 @@ function JsonNode({ keyName, value, depth, maxDepth, path, expandedState, onTogg
         <div className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity duration-150 flex items-center gap-1">
           <button
             onClick={handleCopyValue}
-            className="p-1 hover:bg-gray-100 rounded text-gray-500 hover:text-gray-700"
+            className="p-1 hover:bg-gray-100 dark:hover:bg-catppuccin-surface1 rounded text-gray-500 dark:text-catppuccin-overlay1 hover:text-gray-700 dark:hover:text-catppuccin-text"
             title="Copy value"
           >
             {copied ? (
@@ -112,7 +112,7 @@ function JsonNode({ keyName, value, depth, maxDepth, path, expandedState, onTogg
           {depth > 0 && (
             <button
               onClick={handleCopyPath}
-              className="px-2 py-0.5 text-xs bg-gray-100 hover:bg-gray-200 rounded text-gray-600"
+              className="px-2 py-0.5 text-xs bg-gray-100 dark:bg-catppuccin-surface0 hover:bg-gray-200 dark:hover:bg-catppuccin-surface1 rounded text-gray-600 dark:text-catppuccin-subtext0"
               title="Copy path"
             >
               {path}
@@ -122,7 +122,7 @@ function JsonNode({ keyName, value, depth, maxDepth, path, expandedState, onTogg
       </div>
       
       {isExpandable && isExpanded && (
-        <div className="ml-5 mt-1 border-l-2 border-gray-200 pl-4">
+        <div className="ml-5 mt-1 border-l-2 border-gray-200 dark:border-catppuccin-surface1 pl-4">
           {isObject && 
             Object.entries(value).map(([k, v]) => {
               const childPath = path ? `${path}.${k}` : k;
@@ -229,25 +229,25 @@ export function JsonViewer({ data, initialExpanded = false, maxDepth = 10 }: Jso
   }
 
   return (
-    <div className="bg-gray-50 rounded-lg p-4 overflow-auto">
+    <div className="bg-gray-50 dark:bg-catppuccin-mantle rounded-lg p-4 overflow-auto">
       <div className="mb-3 flex items-center justify-between">
-        <h4 className="text-sm font-medium text-gray-700">JSON Data</h4>
+        <h4 className="text-sm font-medium text-gray-700 dark:text-catppuccin-text">JSON Data</h4>
         <div className="flex gap-2">
           <button
             onClick={handleExpandAll}
-            className="px-3 py-1 text-xs bg-white hover:bg-gray-100 border border-gray-300 rounded transition-colors duration-150"
+            className="px-3 py-1 text-xs bg-white dark:bg-catppuccin-surface0 hover:bg-gray-100 dark:hover:bg-catppuccin-surface1 border border-gray-300 dark:border-catppuccin-surface2 text-gray-700 dark:text-catppuccin-subtext1 rounded transition-colors duration-150"
           >
             Expand All
           </button>
           <button
             onClick={handleCollapseAll}
-            className="px-3 py-1 text-xs bg-white hover:bg-gray-100 border border-gray-300 rounded transition-colors duration-150"
+            className="px-3 py-1 text-xs bg-white dark:bg-catppuccin-surface0 hover:bg-gray-100 dark:hover:bg-catppuccin-surface1 border border-gray-300 dark:border-catppuccin-surface2 text-gray-700 dark:text-catppuccin-subtext1 rounded transition-colors duration-150"
           >
             Collapse All
           </button>
           <button
             onClick={handleCopyAll}
-            className="px-3 py-1 text-xs bg-white hover:bg-gray-100 border border-gray-300 rounded transition-colors duration-150 flex items-center gap-1"
+            className="px-3 py-1 text-xs bg-white dark:bg-catppuccin-surface0 hover:bg-gray-100 dark:hover:bg-catppuccin-surface1 border border-gray-300 dark:border-catppuccin-surface2 text-gray-700 dark:text-catppuccin-subtext1 rounded transition-colors duration-150 flex items-center gap-1"
           >
             {copied ? (
               <Check className="h-3 w-3 text-green-600" />

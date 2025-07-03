@@ -2,6 +2,7 @@ import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Home, Database, AlertCircle } from 'lucide-react';
 import { useConnectionTest } from '../hooks/useElasticsearch';
+import { DarkModeToggle } from './DarkModeToggle';
 
 interface NavItem {
   path: string;
@@ -19,29 +20,30 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const { data: isConnected, isLoading: isTestingConnection } = useConnectionTest();
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-catppuccin-base">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b border-gray-200">
+      <header className="bg-white dark:bg-catppuccin-mantle shadow-sm border-b border-gray-200 dark:border-catppuccin-surface0">
         <div className="px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center">
-              <h1 className="text-xl font-semibold text-gray-900">
+              <h1 className="text-xl font-semibold text-gray-900 dark:text-catppuccin-text">
                 Elasticsearch Dashboard
               </h1>
             </div>
             <div className="flex items-center space-x-4">
+              <DarkModeToggle />
               {isTestingConnection ? (
                 <div className="flex items-center text-gray-500">
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-500 mr-2"></div>
                   Connecting...
                 </div>
               ) : isConnected ? (
-                <div className="flex items-center text-green-600">
-                  <div className="h-2 w-2 bg-green-600 rounded-full mr-2"></div>
+                <div className="flex items-center text-green-600 dark:text-catppuccin-green">
+                  <div className="h-2 w-2 bg-green-600 dark:bg-catppuccin-green rounded-full mr-2"></div>
                   Connected
                 </div>
               ) : (
-                <div className="flex items-center text-red-600">
+                <div className="flex items-center text-red-600 dark:text-catppuccin-red">
                   <AlertCircle size={16} className="mr-2" />
                   Connection Failed
                 </div>
@@ -53,7 +55,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
       <div className="flex h-[calc(100vh-4rem)]">
         {/* Sidebar Navigation */}
-        <nav className="w-64 bg-white shadow-sm border-r border-gray-200">
+        <nav className="w-64 bg-white dark:bg-catppuccin-mantle shadow-sm border-r border-gray-200 dark:border-catppuccin-surface0">
           <div className="p-4">
             <ul className="space-y-2">
               {navItems.map((item) => {
@@ -65,8 +67,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
                       to={item.path}
                       className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors ${
                         isActive
-                          ? 'bg-blue-50 text-blue-700'
-                          : 'text-gray-700 hover:bg-gray-100'
+                          ? 'bg-blue-50 dark:bg-catppuccin-surface0 text-blue-700 dark:text-catppuccin-blue'
+                          : 'text-gray-700 dark:text-catppuccin-subtext1 hover:bg-gray-100 dark:hover:bg-catppuccin-surface0'
                       }`}
                     >
                       {item.icon}
