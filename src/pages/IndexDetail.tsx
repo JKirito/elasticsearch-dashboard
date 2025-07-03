@@ -1,4 +1,4 @@
-import { ArrowLeft, FileText, Search, Settings } from "lucide-react";
+import { ArrowLeft, FileText, Filter, Search, Settings, X } from "lucide-react";
 import type React from "react";
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
@@ -13,6 +13,15 @@ import {
 	useSearchDocuments,
 } from "../hooks/useElasticsearch";
 
+interface SearchFilters {
+	file_size?: {
+		min?: number;
+		max?: number;
+	};
+	file_type?: string;
+	project_code?: string;
+}
+
 export function IndexDetail() {
 	const { indexName = "" } = useParams<{ indexName: string }>();
 	const decodedIndexName = decodeURIComponent(indexName);
@@ -22,6 +31,11 @@ export function IndexDetail() {
 	const [currentPage, setCurrentPage] = useState(0);
 	const [searchQuery, setSearchQuery] = useState("");
 	const [activeSearchQuery, setActiveSearchQuery] = useState("");
+	const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+	const [searchFilters, setSearchFilters] = useState<SearchFilters>({});
+	const [activeSearchFilters, setActiveSearchFilters] = useState<SearchFilters>(
+		{},
+	);
 	const pageSize = 10;
 
 	const {
@@ -36,15 +50,65 @@ export function IndexDetail() {
 	} = useIndexStats(decodedIndexName);
 	const { data: totalCount } = useDocumentCount(decodedIndexName);
 
-	const query = activeSearchQuery
-		? {
-				query: {
-					query_string: {
-						query: activeSearchQuery,
-					},
+	const buildQuery = () => {
+		const mustClauses: any[] = [];
+		const filterClauses: any[] = [];
+
+		// Text search
+		if (activeSearchQuery) {
+			mustClauses.push({
+				query_string: {
+					query: activeSearchQuery,
 				},
+			});
+		}
+
+		// File size filter
+		if (activeSearchFilters.file_size) {
+			const sizeFilter: any = { range: { file_size: {} } };
+			if (activeSearchFilters.file_size.min !== undefined) {
+				sizeFilter.range.file_size.gte = activeSearchFilters.file_size.min;
 			}
-		: undefined;
+			if (activeSearchFilters.file_size.max !== undefined) {
+				sizeFilter.range.file_size.lte = activeSearchFilters.file_size.max;
+			}
+			filterClauses.push(sizeFilter);
+		}
+
+		// File type filter
+		if (activeSearchFilters.file_type) {
+			filterClauses.push({
+				term: {
+					file_type: activeSearchFilters.file_type,
+				},
+			});
+		}
+
+		// Project code filter
+		if (activeSearchFilters.project_code) {
+			filterClauses.push({
+				term: {
+					project_code: activeSearchFilters.project_code,
+				},
+			});
+		}
+
+		// Build final query
+		if (mustClauses.length === 0 && filterClauses.length === 0) {
+			return undefined;
+		}
+
+		return {
+			query: {
+				bool: {
+					...(mustClauses.length > 0 && { must: mustClauses }),
+					...(filterClauses.length > 0 && { filter: filterClauses }),
+				},
+			},
+		};
+	};
+
+	const query = buildQuery();
 
 	const {
 		data: searchResults,
@@ -59,14 +123,31 @@ export function IndexDetail() {
 
 	const handleSearch = () => {
 		setActiveSearchQuery(searchQuery);
+		setActiveSearchFilters(searchFilters);
 		setCurrentPage(0);
 	};
 
 	const handleClearSearch = () => {
 		setSearchQuery("");
 		setActiveSearchQuery("");
+		setSearchFilters({});
+		setActiveSearchFilters({});
 		setCurrentPage(0);
 	};
+
+	const updateFilter = (key: keyof SearchFilters, value: any) => {
+		setSearchFilters((prev) => ({ ...prev, [key]: value }));
+	};
+
+	const clearFilter = (key: keyof SearchFilters) => {
+		setSearchFilters((prev) => {
+			const newFilters = { ...prev };
+			delete newFilters[key];
+			return newFilters;
+		});
+	};
+
+	const hasActiveFilters = Object.keys(activeSearchFilters).length > 0;
 
 	const handleKeyDown = (e: React.KeyboardEvent) => {
 		if (e.key === "Enter") {
@@ -101,46 +182,214 @@ export function IndexDetail() {
 		return (
 			<div className="space-y-4">
 				{/* Search Box */}
-				<div className="flex gap-2">
-					<div className="relative flex-1">
-						<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-						<input
-							type="text"
-							placeholder="Search documents (e.g., field:value)..."
-							value={searchQuery}
-							onChange={(e) => setSearchQuery(e.target.value)}
-							onKeyDown={handleKeyDown}
-							className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-catppuccin-surface2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-catppuccin-surface0 text-gray-900 dark:text-catppuccin-text"
-						/>
-					</div>
-					<button
-						type="button"
-						onClick={handleSearch}
-						className="px-4 py-2 bg-blue-600 dark:bg-catppuccin-blue text-white rounded-lg hover:bg-blue-700 dark:hover:bg-catppuccin-sapphire focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-catppuccin-base transition-colors duration-150 flex items-center gap-2"
-					>
-						<Search className="h-4 w-4" />
-						Search
-					</button>
-					{activeSearchQuery && (
+				<div className="space-y-4">
+					<div className="flex gap-2">
+						<div className="relative flex-1">
+							<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+							<input
+								type="text"
+								placeholder="Search documents (e.g., field:value)..."
+								value={searchQuery}
+								onChange={(e) => setSearchQuery(e.target.value)}
+								onKeyDown={handleKeyDown}
+								className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-catppuccin-surface2 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-catppuccin-surface0 text-gray-900 dark:text-catppuccin-text"
+							/>
+						</div>
 						<button
 							type="button"
-							onClick={handleClearSearch}
-							className="px-4 py-2 bg-gray-500 dark:bg-catppuccin-overlay1 text-white rounded-lg hover:bg-gray-600 dark:hover:bg-catppuccin-overlay2 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 dark:focus:ring-offset-catppuccin-base transition-colors duration-150"
+							onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+							className={`px-4 py-2 rounded-lg focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-catppuccin-base transition-colors duration-150 flex items-center gap-2 ${
+								showAdvancedFilters
+									? "bg-gray-600 dark:bg-catppuccin-overlay1 text-white hover:bg-gray-700 dark:hover:bg-catppuccin-overlay2 focus:ring-gray-500"
+									: "bg-gray-500 dark:bg-catppuccin-overlay0 text-white hover:bg-gray-600 dark:hover:bg-catppuccin-overlay1 focus:ring-gray-500"
+							}`}
 						>
-							Clear
+							<Filter className="h-4 w-4" />
+							Filters
 						</button>
+						<button
+							type="button"
+							onClick={handleSearch}
+							className="px-4 py-2 bg-blue-600 dark:bg-catppuccin-blue text-white rounded-lg hover:bg-blue-700 dark:hover:bg-catppuccin-sapphire focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-catppuccin-base transition-colors duration-150 flex items-center gap-2"
+						>
+							<Search className="h-4 w-4" />
+							Search
+						</button>
+						{(activeSearchQuery || hasActiveFilters) && (
+							<button
+								type="button"
+								onClick={handleClearSearch}
+								className="px-4 py-2 bg-gray-500 dark:bg-catppuccin-overlay1 text-white rounded-lg hover:bg-gray-600 dark:hover:bg-catppuccin-overlay2 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 dark:focus:ring-offset-catppuccin-base transition-colors duration-150"
+							>
+								Clear
+							</button>
+						)}
+					</div>
+
+					{/* Advanced Filters */}
+					{showAdvancedFilters && (
+						<div className="bg-gray-50 dark:bg-catppuccin-surface0 border border-gray-200 dark:border-catppuccin-surface1 rounded-lg p-4">
+							<h4 className="text-sm font-medium text-gray-900 dark:text-catppuccin-text mb-3">
+								Advanced Filters
+							</h4>
+							<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+								{/* File Size Filter */}
+								<div className="space-y-2">
+									<label
+										htmlFor="fileSizeMin"
+										className="block text-sm font-medium text-gray-700 dark:text-catppuccin-subtext1"
+									>
+										File Size (bytes)
+									</label>
+									<div className="flex gap-2">
+										<div className="flex items-center gap-1 flex-1 px-3 py-2 border border-gray-300 dark:border-catppuccin-surface2 rounded-md bg-white dark:bg-catppuccin-surface0 min-w-0">
+											<input
+												type="number"
+												placeholder="Min"
+												value={searchFilters.file_size?.min || ""}
+												onChange={(e) => {
+													const value = e.target.value
+														? Number(e.target.value)
+														: undefined;
+													updateFilter("file_size", {
+														...searchFilters.file_size,
+														min: value,
+													});
+												}}
+												className="flex-1 min-w-0 text-sm bg-transparent border-none focus:outline-none focus:ring-0 text-gray-900 dark:text-catppuccin-text p-0"
+											/>
+											<span className="text-xs text-gray-500 dark:text-catppuccin-subtext0 flex-shrink-0 px-1">
+												-
+											</span>
+											<input
+												type="number"
+												placeholder="Max"
+												value={searchFilters.file_size?.max || ""}
+												onChange={(e) => {
+													const value = e.target.value
+														? Number(e.target.value)
+														: undefined;
+													updateFilter("file_size", {
+														...searchFilters.file_size,
+														max: value,
+													});
+												}}
+												className="flex-1 min-w-0 text-sm bg-transparent border-none focus:outline-none focus:ring-0 text-gray-900 dark:text-catppuccin-text p-0"
+											/>
+										</div>
+										{searchFilters.file_size && (
+											<button
+												type="button"
+												onClick={() => clearFilter("file_size")}
+												className="px-2 py-2 text-gray-500 dark:text-catppuccin-subtext0 hover:text-gray-700 dark:hover:text-catppuccin-text"
+											>
+												<X className="h-4 w-4" />
+											</button>
+										)}
+									</div>
+								</div>
+
+								{/* File Type Filter */}
+								<div className="space-y-2">
+									<label
+										htmlFor="fileType"
+										className="block text-sm font-medium text-gray-700 dark:text-catppuccin-subtext1"
+									>
+										File Type
+									</label>
+									<div className="flex gap-2">
+										<input
+											type="text"
+											placeholder="e.g., pdf, docx, txt"
+											value={searchFilters.file_type || ""}
+											onChange={(e) =>
+												updateFilter("file_type", e.target.value || undefined)
+											}
+											className="flex-1 px-3 py-2 text-sm border border-gray-300 dark:border-catppuccin-surface2 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-catppuccin-surface0 text-gray-900 dark:text-catppuccin-text"
+										/>
+										{searchFilters.file_type && (
+											<button
+												type="button"
+												onClick={() => clearFilter("file_type")}
+												className="px-2 py-2 text-gray-500 dark:text-catppuccin-subtext0 hover:text-gray-700 dark:hover:text-catppuccin-text"
+											>
+												<X className="h-4 w-4" />
+											</button>
+										)}
+									</div>
+								</div>
+
+								{/* Project Code Filter */}
+								<div className="space-y-2">
+									<label
+										htmlFor="projectCode"
+										className="block text-sm font-medium text-gray-700 dark:text-catppuccin-subtext1"
+									>
+										Project Code
+									</label>
+									<div className="flex gap-2">
+										<input
+											type="text"
+											placeholder="e.g., PROJ-001"
+											value={searchFilters.project_code || ""}
+											onChange={(e) =>
+												updateFilter(
+													"project_code",
+													e.target.value || undefined,
+												)
+											}
+											className="flex-1 px-3 py-2 text-sm border border-gray-300 dark:border-catppuccin-surface2 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-catppuccin-surface0 text-gray-900 dark:text-catppuccin-text"
+										/>
+										{searchFilters.project_code && (
+											<button
+												type="button"
+												onClick={() => clearFilter("project_code")}
+												className="px-2 py-2 text-gray-500 dark:text-catppuccin-subtext0 hover:text-gray-700 dark:hover:text-catppuccin-text"
+											>
+												<X className="h-4 w-4" />
+											</button>
+										)}
+									</div>
+								</div>
+							</div>
+						</div>
 					)}
 				</div>
 
 				{/* Search Status */}
-				{activeSearchQuery && (
+				{(activeSearchQuery || hasActiveFilters) && (
 					<div className="bg-blue-50 dark:bg-catppuccin-surface0 border border-blue-200 dark:border-catppuccin-surface1 rounded-lg p-3">
-						<div className="flex items-center gap-2">
+						<div className="flex items-center gap-2 flex-wrap">
 							<Search className="h-4 w-4 text-blue-600 dark:text-catppuccin-blue" />
-							<span className="text-sm text-blue-800 dark:text-catppuccin-text">
-								Searching for:{" "}
-								<span className="font-semibold">"{activeSearchQuery}"</span>
-							</span>
+							{activeSearchQuery && (
+								<span className="text-sm text-blue-800 dark:text-catppuccin-text">
+									Searching for:{" "}
+									<span className="font-semibold">"{activeSearchQuery}"</span>
+								</span>
+							)}
+							{/* Active Filters */}
+							{activeSearchFilters.file_size && (
+								<span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 dark:bg-catppuccin-surface1 text-blue-800 dark:text-catppuccin-text">
+									File Size:{" "}
+									{activeSearchFilters.file_size.min &&
+										`≥${activeSearchFilters.file_size.min}`}
+									{activeSearchFilters.file_size.min &&
+										activeSearchFilters.file_size.max &&
+										" "}
+									{activeSearchFilters.file_size.max &&
+										`≤${activeSearchFilters.file_size.max}`}
+								</span>
+							)}
+							{activeSearchFilters.file_type && (
+								<span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 dark:bg-catppuccin-surface1 text-blue-800 dark:text-catppuccin-text">
+									File Type: {activeSearchFilters.file_type}
+								</span>
+							)}
+							{activeSearchFilters.project_code && (
+								<span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 dark:bg-catppuccin-surface1 text-blue-800 dark:text-catppuccin-text">
+									Project: {activeSearchFilters.project_code}
+								</span>
+							)}
 							<span className="text-sm text-blue-600 dark:text-catppuccin-subtext1">
 								({searchResults?.hits.total.value || 0} results)
 							</span>
