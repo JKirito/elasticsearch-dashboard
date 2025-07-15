@@ -20,6 +20,7 @@ interface SearchFilters {
 	};
 	file_type?: string;
 	project_code?: string;
+	file_path?: string;
 }
 
 export function IndexDetail() {
@@ -89,6 +90,17 @@ export function IndexDetail() {
 			filterClauses.push({
 				term: {
 					project_code: activeSearchFilters.project_code,
+				},
+			});
+		}
+
+		// File path filter with wildcard support
+		if (activeSearchFilters.file_path) {
+			// Escape backslashes for Elasticsearch wildcard query
+			const escapedPath = activeSearchFilters.file_path.replace(/\\/g, '\\\\');
+			filterClauses.push({
+				wildcard: {
+					file_path: escapedPath,
 				},
 			});
 		}
@@ -168,7 +180,11 @@ export function IndexDetail() {
 	const indexInfo = mapping?.[decodedIndexName];
 	const indexStats = stats?.indices?.[decodedIndexName];
 
-	const totalPages = Math.ceil((totalCount || 0) / pageSize);
+	// Use search results count if search is active, otherwise use total count
+	const currentTotalCount = (activeSearchQuery || hasActiveFilters) 
+		? (searchResults?.hits.total.value || 0)
+		: (totalCount || 0);
+	const totalPages = Math.ceil(currentTotalCount / pageSize);
 
 	const renderDocuments = () => {
 		if (isLoadingSearch) {
@@ -351,6 +367,36 @@ export function IndexDetail() {
 										)}
 									</div>
 								</div>
+
+								{/* File Path Filter */}
+								<div className="space-y-2">
+									<label
+										htmlFor="filePath"
+										className="block text-sm font-medium text-gray-700 dark:text-catppuccin-subtext1"
+									>
+										File Path
+									</label>
+									<div className="flex gap-2">
+										<input
+											type="text"
+											placeholder="e.g., Y_Drive\\* or *\\folder\\*"
+											value={searchFilters.file_path || ""}
+											onChange={(e) =>
+												updateFilter("file_path", e.target.value || undefined)
+											}
+											className="flex-1 px-3 py-2 text-sm border border-gray-300 dark:border-catppuccin-surface2 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-catppuccin-surface0 text-gray-900 dark:text-catppuccin-text"
+										/>
+										{searchFilters.file_path && (
+											<button
+												type="button"
+												onClick={() => clearFilter("file_path")}
+												className="px-2 py-2 text-gray-500 dark:text-catppuccin-subtext0 hover:text-gray-700 dark:hover:text-catppuccin-text"
+											>
+												<X className="h-4 w-4" />
+											</button>
+										)}
+									</div>
+								</div>
 							</div>
 						</div>
 					)}
@@ -388,6 +434,11 @@ export function IndexDetail() {
 							{activeSearchFilters.project_code && (
 								<span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 dark:bg-catppuccin-surface1 text-blue-800 dark:text-catppuccin-text">
 									Project: {activeSearchFilters.project_code}
+								</span>
+							)}
+							{activeSearchFilters.file_path && (
+								<span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 dark:bg-catppuccin-surface1 text-blue-800 dark:text-catppuccin-text">
+									Path: {activeSearchFilters.file_path}
 								</span>
 							)}
 							<span className="text-sm text-blue-600 dark:text-catppuccin-subtext1">
